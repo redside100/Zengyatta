@@ -7,10 +7,11 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
 //    testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile "org.testng:testng:6.8"
-    compile "com.github.austinv11:Discord4j:@VERSION@"
+    compile 'net.dv8tion:JDA:3.0.BETA2_108'
 }
