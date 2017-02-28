@@ -27,6 +27,7 @@ public class Main extends ListenerAdapter {
 
         try {
             JDA jda = new JDABuilder(AccountType.CLIENT).setToken(discordProperties.getProperty("discord.token")).buildBlocking();
+
         } catch (LoginException e) {
             System.err.println("Token used: " + discordProperties.get("discord.token"));
             e.printStackTrace();
