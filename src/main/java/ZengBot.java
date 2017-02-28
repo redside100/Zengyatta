@@ -15,7 +15,7 @@ import java.util.Properties;
 /**
  * Created by Simon on 2/25/2017.
  */
-public class Main extends ListenerAdapter {
+public class ZengBot extends ListenerAdapter {
     public static void main(String[] args) {
         /*
         Your user token should be in the discord.properties file located in the resources folder.
@@ -26,8 +26,7 @@ public class Main extends ListenerAdapter {
         Properties discordProperties = getProperties("discord.properties");
 
         try {
-            JDA jda = new JDABuilder(AccountType.CLIENT).setToken(discordProperties.getProperty("discord.token")).buildBlocking();
-
+            JDA jda = new JDABuilder(AccountType.CLIENT).setToken(discordProperties.getProperty("discord.token")).addListener(new ZengBot()).buildBlocking();
         } catch (LoginException e) {
             System.err.println("Token used: " + discordProperties.get("discord.token"));
             e.printStackTrace();
@@ -47,7 +46,7 @@ public class Main extends ListenerAdapter {
     private static Properties getProperties(String fileName) {
         Properties properties = new Properties();
         try {
-            InputStream in = Main.class.getResourceAsStream("/" + fileName);
+            InputStream in = ZengBot.class.getResourceAsStream("/" + fileName);
             properties.load(in);
 
         } catch (IOException e) {
@@ -79,46 +78,18 @@ public class Main extends ListenerAdapter {
 
         String debugOutput =
                 "Author: " + author.getName()
+                + "\nAuthor ID: " + author.getId()
                 + "\nMessage: " + msg
                 + "\nIs official bot: " + bot
-                + "\nResponse number: " + responseNumber;
+                + "\nResponse number: " + responseNumber
+                + "\nChannel: " + channel.getName();
         System.out.println(debugOutput);
 
-        if (event.isFromType(ChannelType.TEXT))         //If this message was sent to a Guild TextChannel
-        {
-            //Because we now know that this message was sent in a Guild, we can do guild specific things
-            // Note, if you don't check the ChannelType before using these methods, they might return null due
-            // the message possibly not being from a Guild!
-
-            Guild guild = event.getGuild();             //The Guild that this message was sent in. (note, in the API, Guilds are Servers)
-            TextChannel textChannel = event.getTextChannel(); //The TextChannel that this message was sent to.
-            Member member = event.getMember();          //This Member that sent the message. Contains Guild specific information about the User!
-
-            String name = member.getEffectiveName();    //This will either use the Member's nickname if they have one,
-            // otherwise it will default to their username. (User#getName())
-
-            System.out.printf("(%s)[%s]<%s>: %s\n", guild.getName(), textChannel.getName(), name, msg);
-        }
-        else if (event.isFromType(ChannelType.PRIVATE)) //If this message was sent to a PrivateChannel
-        {
-            //The message was sent in a PrivateChannel.
-            //In this example we don't directly use the privateChannel, however, be sure, there are uses for it!
-            PrivateChannel privateChannel = event.getPrivateChannel();
-
-            System.out.printf("[PRIV]<%s>: %s\n", author.getName(), msg);
-        }
-        else if (event.isFromType(ChannelType.GROUP))   //If this message was sent to a Group. This is CLIENT only!
-        {
-            //The message was sent in a Group. It should be noted that Groups are CLIENT only.
-            Group group = event.getGroup();
-            String groupName = group.getName() != null ? group.getName() : "";  //A group name can be null due to it being unnamed.
-
-            System.out.printf("[GRP: %s]<%s>: %s\n", groupName, author.getName(), msg);
-        }
-
-        if (msg.equals("!debug")) {
-
-            channel.sendMessage(debugOutput).queue();
+        switch(msg) {
+            case "-debug":
+                channel.sendMessage(debugOutput).queue();
+                message.deleteMessage().queue();
+                break;
         }
     }
 }
