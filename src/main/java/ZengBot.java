@@ -26,7 +26,7 @@ public class ZengBot extends ListenerAdapter {
         Properties discordProperties = getProperties("discord.properties");
 
         try {
-            JDA jda = new JDABuilder(AccountType.CLIENT).setToken(discordProperties.getProperty("discord.token")).addListener(new ZengBot()).buildBlocking();
+            JDA jda = new JDABuilder(AccountType.BOT).setToken(discordProperties.getProperty("discord.token")).addListener(new ZengBot()).buildBlocking();
         } catch (LoginException e) {
             System.err.println("Token used: " + discordProperties.get("discord.token"));
             e.printStackTrace();
@@ -65,31 +65,37 @@ public class ZengBot extends ListenerAdapter {
         long responseNumber = event.getResponseNumber();//The amount of discord events that JDA has received since the last reconnect.
 
         //Event specific information
-        User author = event.getAuthor();                  //The user that sent the message
+        User author = event.getAuthor();                //The user that sent the message
         Message message = event.getMessage();           //The message that was received.
-        MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
-        //  This could be a TextChannel, PrivateChannel, or Group!
+        MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to. This could be a TextChannel, PrivateChannel, or Group!
 
-        String msg = message.getContent();              //This returns a human readable version of the Message. Similar to
-        // what you would see in the client.
+        String msg = message.getContent();              //This returns a human readable version of the Message. Similar to what you would see in the client.
 
-        boolean bot = author.isBot();                     //This boolean is useful to determine if the User that
-        // sent the Message is a BOT or not!
+        boolean bot = author.isBot();                     //This boolean is useful to determine if the User that sent the Message is a BOT or not!
 
         String debugOutput =
-                "Author: " + author.getName()
+                "Author: " + author.getAsMention()
                 + "\nAuthor ID: " + author.getId()
                 + "\nMessage: " + msg
-                + "\nIs official bot: " + bot
+                + "\nAuthor is official bot: " + bot
                 + "\nResponse number: " + responseNumber
-                + "\nChannel: " + channel.getName();
+                + "\nChannel: " + channel.getName() + "\n";
         System.out.println(debugOutput);
 
-        switch(msg) {
-            case "-debug":
-                channel.sendMessage(debugOutput).queue();
-                message.deleteMessage().queue();
-                break;
+        if (msg.startsWith("-")) {
+            String output = "[" + author.getName() + "] ";
+            switch(msg) {
+                case "-debug":
+                    output += debugOutput;
+                    break;
+                case "-help":
+                    output += "Available commands: -debug, -help";
+                    break;
+                default:
+                    output += "Unknown command.";
+            }
+            channel.sendMessage(output).queue();
+            message.deleteMessage().queue();
         }
     }
 }
