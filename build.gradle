@@ -15,4 +15,5 @@ dependencies {
     testCompile "org.testng:testng:6.8"
     compile 'net.dv8tion:JDA:3.0.BETA2_108'
     compile 'com.sedmelluq:lavaplayer:1.2.22'
+    compile 'com.google.apis:google-api-services-youtube:v3-rev180-1.22.0'
 }
