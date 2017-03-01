@@ -216,6 +216,7 @@ public class ZengBot extends ListenerAdapter {
 
             @Override
             public void noMatches() {
+                //add in search here
                 channel.sendMessage("`[Music]` Nothing found by " + trackUrl).queue();
             }
 
@@ -231,9 +232,9 @@ public class ZengBot extends ListenerAdapter {
     }
 
     private void skipTrack(TextChannel channel) {
+        //Todo: clear queue
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.scheduler.nextTrack();
-
         channel.sendMessage("`[Music]` Skipped to next track.").queue();
     }
 }
