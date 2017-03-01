@@ -14,4 +14,5 @@ dependencies {
 //    testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile "org.testng:testng:6.8"
     compile 'net.dv8tion:JDA:3.0.BETA2_108'
+    compile 'com.sedmelluq:lavaplayer:1.2.22'
 }
