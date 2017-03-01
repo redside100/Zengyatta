@@ -51,4 +51,13 @@ public class TrackScheduler extends AudioEventAdapter {
             nextTrack();
         }
     }
+
+    public String queueString() {
+        String output = "";
+        int counter = 1;
+        for (AudioTrack t: queue) {
+            output += "\n" + counter++ + ". " + t.getInfo().title + "";
+        }
+        return output;
+    }
 }

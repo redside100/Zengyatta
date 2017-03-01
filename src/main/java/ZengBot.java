@@ -101,6 +101,7 @@ public class ZengBot extends ListenerAdapter {
         System.out.println(debugOutput);
 
         if (msg.startsWith("-")) {
+            message.deleteMessage().queue();
             String output = "`[To: " + author.getName() + "]` ";
             Guild guild = event.getGuild();
             VoiceChannel vChannel;
@@ -110,7 +111,7 @@ public class ZengBot extends ListenerAdapter {
                     output += debugOutput;
                     break;
                 case "-help":
-                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip";
+                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip, -queue";
                     break;
                 case "-join":
                     vChannel = getUserCurrentVoiceChannel(author, guild);
@@ -129,20 +130,36 @@ public class ZengBot extends ListenerAdapter {
                 case "-play":
                     try {
                         vChannel = getUserCurrentVoiceChannel(guild.getMemberById(id).getUser(), guild);
-                        if (msgArr.length == 2)
+                        if (msgArr.length == 2 && !vChannel.equals(null)) {
                             loadAndPlay(event.getTextChannel(), msgArr[1]);
+                            output = "";
+                        } else {
+                            output += "Not in a voice channel.";
+                        }
                     } catch (Exception e) {
-                        output += "Not in a voice channel.";
                     }
                     break;
                 case "-skip":
-                    skipTrack(event.getTextChannel());
+                    try {
+                        vChannel = getUserCurrentVoiceChannel(guild.getMemberById(id).getUser(), guild);
+                        if (!vChannel.equals(null)) {
+                            skipTrack(event.getTextChannel());
+                            output = "";
+                        } else {
+                            output += "Not in a voice channel.";
+                        }
+                    } catch (Exception e) {
+                    }
+                    break;
+                case "-queue":
+                    GuildMusicManager musicManager = getGuildAudioPlayer(guild);
+                    output += "Queue: " + musicManager.scheduler.queueString();
                     break;
                 default:
                     output += "Unknown command.";
             }
-            channel.sendMessage(output).queue();
-            message.deleteMessage().queue();
+            if (!output.equals(""))
+                channel.sendMessage(output).queue();
         }
     }
 
