@@ -2,7 +2,9 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -55,9 +57,24 @@ public class TrackScheduler extends AudioEventAdapter {
     public String queueString() {
         String output = "";
         int counter = 1;
-        for (AudioTrack t: queue) {
-            output += "\n" + counter++ + ". " + t.getInfo().title + "";
+        AudioTrack current = player.getPlayingTrack();
+        DecimalFormat format = new DecimalFormat("00");
+        long total = 0;
+        try {
+            if (!current.equals(null)) {
+                long position = current.getPosition();
+                total += current.getDuration() - position;
+                String timeStamp = " [" + position/60000 + ":" + format.format((position%60000)/1000) + "/" + current.getDuration()/60000 + ":" + format.format((current.getDuration()%60000)/1000) + "]";
+                output = "\nCurrently playing: " + current.getInfo().title + timeStamp;
+            }
+        } catch (Exception e) {
         }
+        for (AudioTrack t: queue) {
+            AudioTrackInfo info = t.getInfo();
+            total += info.length;
+            output += "\n" + counter++ + ". " + info.title + " [" + info.length/60000 + ":" + format.format((info.length%60000)/1000) + "]";
+        }
+        output += "\nTotal queued length: [" + total/60000 + ":" + format.format((total%60000)/1000) + "]";
         return output;
     }
 }

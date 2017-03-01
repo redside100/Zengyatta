@@ -25,8 +25,9 @@ import java.util.Properties;
  * Created by Simon on 2/25/2017.
  */
 public class ZengBot extends ListenerAdapter {
+    //Todo: search, fix the leave bug, andrews ban api
     static AudioManager manager = null;
-    static final String id = "286283344784916480";
+    static final String id = "286283344784916480"; //id of self - replace this!
 
     private static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     private static Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
@@ -152,7 +153,7 @@ public class ZengBot extends ListenerAdapter {
                     break;
                 case "-queue":
                     GuildMusicManager musicManager = getGuildAudioPlayer(guild);
-                    output += "Queue: " + musicManager.scheduler.queueString();
+                    output += musicManager.scheduler.queueString();
                     break;
                 default:
                     output += "Unknown command.";
@@ -201,6 +202,7 @@ public class ZengBot extends ListenerAdapter {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
+                //todo: automatically add every thing in the playlist to queue
                 AudioTrack firstTrack = playlist.getSelectedTrack();
 
                 if (firstTrack == null) {
