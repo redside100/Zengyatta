@@ -26,6 +26,7 @@ import java.util.Properties;
  * Created by Simon on 2/25/2017.
  */
 public class ZengBot extends ListenerAdapter {
+    //todo: check if bot is in server
     static AudioManager manager = null;
     static final String id = "286283344784916480"; //id of self - replace this!
 

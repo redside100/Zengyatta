@@ -17,3 +17,12 @@ dependencies {
     compile 'com.sedmelluq:lavaplayer:1.2.22'
     compile 'com.google.apis:google-api-services-youtube:v3-rev180-1.22.0'
 }
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'main.ZengBot'
+        )
+    }
+}
