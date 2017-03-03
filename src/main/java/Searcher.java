@@ -29,6 +29,8 @@ import java.util.Properties;
 public class Searcher {
     private static final String PROPERTIES_FILENAME = "youtube.properties";
     private static YouTube youtube;
+    public boolean isSelecting = false;
+    public String[] results = new String[5];
 
     /**
      * Searches youtube for a given query
@@ -43,34 +45,8 @@ public class Searcher {
      *   - channel: name of the channel
      *   - datePublished: returns date published in ISO format without time (YYYY-MM-DD)
      */
-    public static ArrayList<Map<String, String>> search(String query) {
+    public ArrayList<Map<String, String>> search(String query) {
         Properties properties = getProperties(PROPERTIES_FILENAME);
-        return search(query, 0, Integer.parseInt(properties.getProperty("youtube.numreturns")), properties);
-    }
-
-    /**
-     * Searches youtube for a given query (paged). Non-functional at the moment.
-     *
-     * @param query - Search query
-     * @param beginIndex - beginning index of search result (deprecated)
-     * @param endIndex - ending index of search result (deprecated)
-     * @return See search(String query)
-     */
-    public static ArrayList<Map<String, String>> search(String query, int beginIndex, int endIndex) {
-        return search(query, beginIndex, endIndex, getProperties(PROPERTIES_FILENAME));
-    }
-
-    /**
-     * Same as the others, but this one allows for stateless passing of the properties, which means properties can be
-     * updated as the program is running
-     *
-     * @param query - See search(String query, int beginIndex, int endIndex)
-     * @param beginIndex - See search(String query, int beginIndex, int endIndex)
-     * @param endIndex - See search(String query, int beginIndex, int endIndex)
-     * @param properties - A properties object containing the youtube apikey
-     * @return - See search(String query)
-     */
-    private static ArrayList<Map<String, String>> search(String query, int beginIndex, int endIndex, Properties properties) {
         try {
             youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), request -> {
             }).setApplicationName("ZTVDC").build();
@@ -84,7 +60,7 @@ public class Searcher {
             search.setType("video");
 
             search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url,snippet/publishedAt,snippet/description,snippet/channelTitle)");
-            search.setMaxResults((long)endIndex);
+            search.setMaxResults((long)5);
 
             SearchListResponse searchResponse = search.execute();
 
@@ -101,13 +77,14 @@ public class Searcher {
         return null;
     }
 
+
     /**
      * Gets properties from .properties files
      *
      * @param fileName - path and name of properties file
      * @return A Properties object with all the properties found in the file
      */
-    private static Properties getProperties(String fileName) {
+    private Properties getProperties(String fileName) {
         Properties properties = new Properties();
         try {
             InputStream in = Searcher.class.getResourceAsStream("/" + fileName);
@@ -122,16 +99,18 @@ public class Searcher {
         return properties;
     }
 
-    private static ArrayList<Map<String, String>> parse(SearchListResponse response) {
+    private ArrayList<Map<String, String>> parse(SearchListResponse response) {
         ResourceId rId;
         ArrayList<Map<String, String>> output = new ArrayList<>();
 
+        int counter = 0;
         for (SearchResult result : response.getItems()) {
             SearchResultSnippet snippet = result.getSnippet();
             rId = result.getId();
             Map<String, String> element = new HashMap<>();
             element.put("title", snippet.getTitle());
-            element.put("url", "http://www.youtube.com/watch?v=" + rId.getVideoId());
+            results[counter] = "http://www.youtube.com/watch?v=" + rId.getVideoId();
+            element.put("url", results[counter++]);
             element.put("channel", snippet.getChannelTitle());
             output.add(element);
             System.out.println(element.toString());

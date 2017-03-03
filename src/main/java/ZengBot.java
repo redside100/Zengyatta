@@ -17,6 +17,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -25,12 +26,13 @@ import java.util.Properties;
  * Created by Simon on 2/25/2017.
  */
 public class ZengBot extends ListenerAdapter {
-    //Todo: search, fix the leave bug, andrews ban api
+    //Todo: search, fix the leave bug, andrews ban api, now playing
     static AudioManager manager = null;
     static final String id = "286283344784916480"; //id of self - replace this!
 
     private static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     private static Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
+    private static Map<Long, Searcher> searchers = new HashMap<>();
 
     public static void main(String[] args) {
         /*
@@ -92,7 +94,7 @@ public class ZengBot extends ListenerAdapter {
         boolean bot = author.isBot();                     //This boolean is useful to determine if the User that sent the Message is a BOT or not!
 
         String debugOutput =
-                "Author: " + author.getAsMention()
+                "Author: " + author.getName()
                 + "\nAuthor ID: " + author.getId()
                 + "\nMessage: " + msg
                 + "\nAuthor is official bot: " + bot
@@ -130,13 +132,14 @@ public class ZengBot extends ListenerAdapter {
                 case "-play":
                     try {
                         vChannel = getUserCurrentVoiceChannel(guild.getMemberById(id).getUser(), guild);
-                        if (msgArr.length == 2 && !vChannel.equals(null)) {
+                        if (!vChannel.equals(null)) {
                             loadAndPlay(event.getTextChannel(), msgArr[1]);
                             output = "";
                         } else {
-                            output += "Not in a voice channel.";
+                            output += "Not in a voice channel, or you done goofed in command usage.";
                         }
                     } catch (Exception e) {
+                        output += "" + e.getMessage();
                     }
                     break;
                 case "-skip":
@@ -154,6 +157,30 @@ public class ZengBot extends ListenerAdapter {
                 case "-queue":
                     GuildMusicManager musicManager = getGuildAudioPlayer(guild);
                     output += musicManager.scheduler.queueString();
+                    break;
+                case "-1":
+                case "-2":
+                case "-3":
+                case "-4":
+                case "-5":
+                    if (getGuildSearcher(guild).isSelecting) {
+                        try {
+                            vChannel = getUserCurrentVoiceChannel(guild.getMemberById(id).getUser(), guild);
+                            if (!vChannel.equals(null)) {
+                                loadAndPlay(event.getTextChannel(), getGuildSearcher(guild).results[Integer.parseInt(msg.substring(1)) - 1]);
+                                getGuildSearcher(guild).isSelecting = false;
+                                output = "";
+                            } else {
+                                output += "Not in a voice channel.";
+                            }
+                        } catch (Exception e) {
+                            output += "" + e.getMessage();
+                        }
+                    }
+                    break;
+                case "-c":
+                    if (getGuildSearcher(guild).isSelecting) output += "Selection cancelled.";
+                    getGuildSearcher(guild).isSelecting = false;
                     break;
                 default:
                     output += "Unknown command.";
@@ -189,8 +216,21 @@ public class ZengBot extends ListenerAdapter {
         return musicManager;
     }
 
+    private synchronized Searcher getGuildSearcher(Guild guild) {
+        long guildId = Long.parseLong(guild.getId());
+        Searcher searcher = searchers.get(guildId);
+
+        if (searcher == null) {
+            searcher = new Searcher();
+            searchers.put(guildId, searcher);
+        }
+
+        return searcher;
+    }
+
     private void loadAndPlay(final TextChannel channel, final String trackUrl) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        Searcher searcher = getGuildSearcher(channel.getGuild());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
@@ -217,7 +257,15 @@ public class ZengBot extends ListenerAdapter {
             @Override
             public void noMatches() {
                 //add in search here
-                channel.sendMessage("`[Music]` Nothing found by " + trackUrl).queue();
+//                channel.sendMessage("`[Music]` Nothing found by " + trackUrl).queue();
+                ArrayList<Map<String, String>> responses = searcher.search(trackUrl);
+                String message = "`[Music]` Search results. Type -# to select a result, or -c to cancel:";
+                for (int i = 0; i < 5; i++) {
+                    Map<String, String> results = responses.get(i);
+                    message += "\n" + (i + 1) + ". **" + results.get("title") + "** by *" + results.get("channel") + "*";
+                }
+                searcher.isSelecting = true;
+                channel.sendMessage(message).queue();
             }
 
             @Override
