@@ -131,11 +131,8 @@ public class Searcher {
             rId = result.getId();
             Map<String, String> element = new HashMap<>();
             element.put("title", snippet.getTitle());
-            element.put("url", "http://www.youtube.com/embed/" + rId.getVideoId());
-            element.put("thumbnail", snippet.getThumbnails().getDefault().getUrl());
-            element.put("description", snippet.getDescription());
+            element.put("url", "http://www.youtube.com/watch?v=" + rId.getVideoId());
             element.put("channel", snippet.getChannelTitle());
-            element.put("datePublished", snippet.getPublishedAt().toString().substring(0, 10));
             output.add(element);
             System.out.println(element.toString());
         }
