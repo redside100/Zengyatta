@@ -26,7 +26,7 @@ import java.util.Properties;
  * Created by Simon on 2/25/2017.
  */
 public class ZengBot extends ListenerAdapter {
-    //todo: check if bot is in server
+    //todo: fix -# returning things when not selecting
     static AudioManager manager = null;
     static final String id = "286283344784916480"; //id of self - replace this!
 
@@ -126,20 +126,20 @@ public class ZengBot extends ListenerAdapter {
                         guild.getAudioManager().closeAudioConnection();
                         output += "Left `[" + vChannel.getName() + "]`";
                     } catch (NullPointerException e) {
-                        output += "Not in a voice channel right now!";
+                        output += "Not in a voice channel right now, or something done goofed!";
                     }
                     break;
                 case "-play":
                     try {
                         vChannel = getUserCurrentVoiceChannel(guild.getMemberById(id).getUser(), guild);
                         if (!vChannel.equals(null)) {
-                            loadAndPlay(event.getTextChannel(), msgArr[1]);
+                            loadAndPlay(event.getTextChannel(), msg.substring(6));
                             output = "";
                         } else {
                             output += "Not in a voice channel, or you done goofed in command usage.";
                         }
                     } catch (Exception e) {
-                        output += "" + e.getMessage();
+                        output += "Not in a voice channel, or you done goofed in command usage.";
                     }
                     break;
                 case "-skip":
@@ -174,7 +174,7 @@ public class ZengBot extends ListenerAdapter {
                                 output += "Not in a voice channel.";
                             }
                         } catch (Exception e) {
-                            output += "" + e.getMessage();
+                            output += "Not in a voice channel, or something done goofed.";
                         }
                     }
                     break;
