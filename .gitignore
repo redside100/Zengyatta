@@ -2,3 +2,4 @@
 .idea/
 build/
 src/main/resources/discord.properties
+src/main/resources/youtube.properties
