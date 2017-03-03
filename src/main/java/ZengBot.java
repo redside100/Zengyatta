@@ -26,7 +26,6 @@ import java.util.Properties;
  * Created by Simon on 2/25/2017.
  */
 public class ZengBot extends ListenerAdapter {
-    //Todo: search, fix the leave bug, andrews ban api, now playing
     static AudioManager manager = null;
     static final String id = "286283344784916480"; //id of self - replace this!
 
@@ -156,7 +155,7 @@ public class ZengBot extends ListenerAdapter {
                     break;
                 case "-queue":
                     GuildMusicManager musicManager = getGuildAudioPlayer(guild);
-                    output += musicManager.scheduler.queueString();
+                    output = "`[Music]`" + musicManager.scheduler.queueString();
                     break;
                 case "-1":
                 case "-2":

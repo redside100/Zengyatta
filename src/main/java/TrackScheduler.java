@@ -65,7 +65,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 long position = current.getPosition();
                 total += current.getDuration() - position;
                 String timeStamp = "** [" + position/60000 + ":" + format.format((position%60000)/1000) + "/" + current.getDuration()/60000 + ":" + format.format((current.getDuration()%60000)/1000) + "]";
-                output = "\nCurrently playing: **" + current.getInfo().title + timeStamp;
+                output = "Currently playing: **" + current.getInfo().title + timeStamp;
             }
         } catch (Exception e) {
         }
