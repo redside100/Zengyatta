@@ -113,7 +113,7 @@ public class ZengBot extends ListenerAdapter {
                     output += debugOutput;
                     break;
                 case "-help":
-                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip, -queue";
+                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip, -queue, -waffle, -weather";
                     break;
                 case "-join":
                     vChannel = getUserCurrentVoiceChannel(author, guild);
@@ -181,6 +181,12 @@ public class ZengBot extends ListenerAdapter {
                 case "-c":
                     if (getGuildSearcher(guild).isSelecting) output += "Selection cancelled.";
                     getGuildSearcher(guild).isSelecting = false;
+                    break;
+                case "-waffle":
+                    output += "http://www.ihop.com/-/media/DineEquity/IHop/Images/Menu/MenuItems/Belgian-Waffles/belgium_waff.ashx";
+                    break;
+                case "-weather":
+                    output += "https://metarweather.tk/";
                     break;
                 default:
                     output += "Unknown command.";
