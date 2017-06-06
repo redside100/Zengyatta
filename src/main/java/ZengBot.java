@@ -190,11 +190,12 @@ public class ZengBot extends ListenerAdapter {
                     break;
                 case "-recat":
                     String recat = msg.substring(7);
-                    recat.replaceAll("b", ":b:");
-                    recat.replaceAll("o", ":o:");
-                    recat.replaceAll("a", ":a:");
+                    recat = recat.replaceAll("b|B", ":b:");
+                    recat = recat.replaceAll("o|O", ":o2:");
+                    recat = recat.replaceAll("a|A", ":a:");
+                    System.out.println(recat);
                     output = recat;
-
+                    break;
                 default:
                     output += "Unknown command.";
             }
