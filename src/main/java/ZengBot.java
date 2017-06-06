@@ -113,7 +113,7 @@ public class ZengBot extends ListenerAdapter {
                     output += debugOutput;
                     break;
                 case "-help":
-                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip, -queue, -waffle, -weather";
+                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip, -queue, -waffle, -weather, -recat";
                     break;
                 case "-join":
                     vChannel = getUserCurrentVoiceChannel(author, guild);
@@ -188,6 +188,13 @@ public class ZengBot extends ListenerAdapter {
                 case "-weather":
                     output += "https://metarweather.tk/";
                     break;
+                case "-recat":
+                    String recat = msg.substring(7);
+                    recat.replaceAll("b", ":b:");
+                    recat.replaceAll("o", ":o:");
+                    recat.replaceAll("a", ":a:");
+                    output = recat;
+
                 default:
                     output += "Unknown command.";
             }
