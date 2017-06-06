@@ -113,7 +113,7 @@ public class ZengBot extends ListenerAdapter {
                     output += debugOutput;
                     break;
                 case "-help":
-                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip, -queue, -waffle, -weather, -recat";
+                    output += "Available commands: -debug, -help, -join, -leave, -play, -skip, -queue, -waffle, -weather, -dank";
                     break;
                 case "-join":
                     vChannel = getUserCurrentVoiceChannel(author, guild);
@@ -188,19 +188,21 @@ public class ZengBot extends ListenerAdapter {
                 case "-weather":
                     output += "https://metarweather.tk/";
                     break;
-                case "-recat":
+                case "-dank":
                     String recat = msg.substring(7);
                     recat = recat.replaceAll("b|B", ":b:");
                     recat = recat.replaceAll("o|O", ":o2:");
                     recat = recat.replaceAll("a|A", ":a:");
                     System.out.println(recat);
-                    output = recat;
+                    output += recat;
                     break;
                 default:
                     output += "Unknown command.";
             }
             if (!output.equals(""))
                 channel.sendMessage(output).queue();
+        } else if (author.getId().equals("286268809369616395") && msg.contains("won the brawl!")) {
+            channel.sendMessage("!brawl").queue();
         }
     }
 
