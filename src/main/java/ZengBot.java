@@ -103,7 +103,11 @@ public class ZengBot extends ListenerAdapter {
         System.out.println(debugOutput);
 
         if (msg.startsWith("-")) {
-            message.deleteMessage().queue();
+            try {
+                message.deleteMessage().queue();
+            } catch (Exception e) {
+                System.out.println("Warning: message delete failed!");
+            }
             String output = "`[To: " + author.getName() + "]` ";
             Guild guild = event.getGuild();
             VoiceChannel vChannel;
@@ -117,8 +121,12 @@ public class ZengBot extends ListenerAdapter {
                     break;
                 case "-join":
                     vChannel = getUserCurrentVoiceChannel(author, guild);
-                    output += "Joining `[" + vChannel.getName() + "]`";
-                    guild.getAudioManager().openAudioConnection(vChannel);
+                    if (!(vChannel == null)) {
+                        output += "Joining `[" + vChannel.getName() + "]`";
+                        guild.getAudioManager().openAudioConnection(vChannel);
+                    } else {
+                        output += "Unable to join voice channel!";
+                    }
                     break;
                 case "-leave":
                     try {
@@ -155,15 +163,27 @@ public class ZengBot extends ListenerAdapter {
                     }
                     break;
                 case "-queue":
-                    GuildMusicManager musicManager = getGuildAudioPlayer(guild);
-                    output = "`[Music]`" + musicManager.scheduler.queueString();
+                    GuildMusicManager musicManager = null;
+                    try {
+                        musicManager = getGuildAudioPlayer(guild);
+                        output = "`[Music]`" + musicManager.scheduler.queueString();
+                    } catch (Exception e) {
+                        output += "Don't do -queue when PMing the bot!";
+                    }
                     break;
                 case "-1":
                 case "-2":
                 case "-3":
                 case "-4":
                 case "-5":
-                    if (getGuildSearcher(guild).isSelecting) {
+                    Searcher guildSearcher = null;
+                    try {
+                        guildSearcher = getGuildSearcher(guild);
+                    } catch (Exception e) {
+                        output += "No.";
+                        break;
+                    }
+                    if (guildSearcher.isSelecting) {
                         try {
                             vChannel = getUserCurrentVoiceChannel(guild.getMemberById(id).getUser(), guild);
                             if (!vChannel.equals(null)) {
@@ -208,12 +228,16 @@ public class ZengBot extends ListenerAdapter {
 
 
     public VoiceChannel getUserCurrentVoiceChannel(User user, Guild guild) {
-        for (VoiceChannel chn : guild.getVoiceChannels()) {
-            for (Member memberInChannel : chn.getMembers()) {
-                if (user.getId().equals(memberInChannel.getUser().getId())) {
-                    return chn;
+        try {
+            for (VoiceChannel chn : guild.getVoiceChannels()) {
+                for (Member memberInChannel : chn.getMembers()) {
+                    if (user.getId().equals(memberInChannel.getUser().getId())) {
+                        return chn;
+                    }
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Warning: Failed to join voice channel");
         }
         return null;
     }
