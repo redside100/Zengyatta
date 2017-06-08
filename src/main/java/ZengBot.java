@@ -28,7 +28,7 @@ import java.util.Properties;
 public class ZengBot extends ListenerAdapter {
     //todo: fix -# returning things when not selecting
     static AudioManager manager = null;
-    static final String id = "286283344784916480"; //id of self - replace this!
+    static final String id = "322417307752071169"; //id of self - replace this!
 
     private static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     private static Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
