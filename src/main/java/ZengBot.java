@@ -44,7 +44,7 @@ public class ZengBot extends ListenerAdapter {
         Properties discordProperties = getProperties("discord.properties");
 
         try {
-            JDA jda = new JDABuilder(AccountType.BOT).setToken(discordProperties.getProperty("discord.token")).addListener(new ZengBot()).buildBlocking();
+            JDA jda = new JDABuilder(AccountType.BOT).setToken(discordProperties.getProperty("discord.token")).addEventListener(new ZengBot()).buildBlocking();
             AudioSourceManagers.registerRemoteSources(playerManager);
             AudioSourceManagers.registerLocalSource(playerManager);
         } catch (LoginException e) {
@@ -103,11 +103,14 @@ public class ZengBot extends ListenerAdapter {
         System.out.println(debugOutput);
 
         if (msg.startsWith("-")) {
+            // Good practice to not delete user commands right after issuing
+            /*
             try {
-                message.deleteMessage().queue();
+                message.delete().queue();
             } catch (Exception e) {
                 System.out.println("Warning: message delete failed!");
             }
+            */
             String output = "`[To: " + author.getName() + "]` ";
             Guild guild = event.getGuild();
             VoiceChannel vChannel;
@@ -209,7 +212,7 @@ public class ZengBot extends ListenerAdapter {
                     output += "https://metarweather.tk/";
                     break;
                 case "-dank":
-                    String recat = msg.substring(6);
+                    String recat = msg.substring(5);
                     recat = recat.replaceAll("b|B", ":b:");
                     recat = recat.replaceAll("o|O", ":o2:");
                     recat = recat.replaceAll("a|A", ":a:");
