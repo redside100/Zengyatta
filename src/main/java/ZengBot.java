@@ -212,7 +212,7 @@ public class ZengBot extends ListenerAdapter {
                     output += "https://metarweather.tk/";
                     break;
                 case "-dank":
-                    String recat = msg.substring(5).substring(1);
+                    String recat = msg.substring(6);
                     recat = recat.replaceAll("b|B", ":b:");
                     recat = recat.replaceAll("o|O", ":o2:");
                     recat = recat.replaceAll("a|A", ":a:");
